@@ -1,0 +1,100 @@
+/* Depth layer: 3D sections, crossing ribbons, testimonial deck, themed colour shifts.
+   Loaded after styles.css. */
+
+html { overflow-x: clip; }
+
+/* Opaque surfaces keep their own ink, whatever theme the page behind them is in. */
+:where(.services__sheet, .contact, .step, .card, .quote, .reach__card) {
+  --fg: var(--ink); --fg-soft: #4A4D55; --accent-ink: #00857D; --tline: var(--line); color: var(--ink);
+}
+.services__sheet, .contact { background: var(--paper); transform-origin: 50% 0; will-change: transform; }
+.contact { box-shadow: 0 -30px 80px -40px rgba(38, 39, 50, .45); }
+.services__sheet { box-shadow: 0 -30px 80px -30px rgba(0, 0, 0, .5); }
+
+/* ── hero: letters flip up in 3D ── */
+.hero__title { perspective: 900px; }
+.hero__title .line.is-split > span { transform: none; animation: none; }
+.wd { display: inline-block; white-space: nowrap; }
+.ch { display: inline-block; transform: translateY(105%) rotateX(-85deg); transform-origin: 50% 100%; animation: flipin 1s var(--ease) forwards; animation-delay: calc(var(--c) * 22ms + .15s); }
+@keyframes flipin { to { transform: none; } }
+
+/* ── crossing ribbons ── */
+.ribbons { position: relative; z-index: 1; height: clamp(150px, 17vw, 240px); overflow: hidden; }
+.ribbons .marquee { position: absolute; left: -6%; width: 112%; top: 50%; padding: 15px 0; }
+.marquee--a { background: var(--deep); transform: translateY(-50%) rotate(-2.6deg); }
+.marquee--b { background: var(--teal); color: #fff; transform: translateY(-50%) rotate(2.2deg); box-shadow: 0 18px 40px -18px rgba(0, 126, 119, .8); }
+.marquee--b i { border-bottom-color: #fff; }
+.marquee__track--rev { animation-direction: reverse; animation-duration: 58s; }
+
+/* ── about: three image planes at different depths ── */
+.about__art { transform-style: preserve-3d; will-change: transform; }
+
+/* ── how: cards tip back as the next one covers them ── */
+.step { will-change: transform; }
+
+/* ── team: portrait, plate and gem on separate planes ── */
+.person__scene { position: relative; transform-style: preserve-3d; will-change: transform; }
+.person__scene .person__plate { transform: translateZ(-70px); }
+.person__scene img { transform: translateZ(0); }
+.person__gem {
+  position: absolute; right: -20px; top: -22px; width: 0; height: 0;
+  border-left: 28px solid transparent; border-right: 28px solid transparent; border-bottom: 48px solid var(--coral);
+  transform: translateZ(90px) rotate(14deg); filter: drop-shadow(0 16px 18px rgba(38, 39, 50, .35));
+}
+.person--flip .person__gem { right: auto; left: -20px; border-bottom-color: var(--mint); transform: translateZ(90px) rotate(-14deg); }
+
+/* ── testimonials: a rotating deck ── */
+.quotes__bg { opacity: .07; }
+.deck { position: relative; }
+.deck__stage { display: grid; perspective: 1600px; touch-action: pan-y; }
+.deck .quote {
+  --o: 0; --a: 0;
+  grid-area: 1 / 1; width: min(100%, 880px); justify-self: center;
+  background: #fff; border: 0; border-radius: 30px; padding: clamp(26px, 4vw, 58px);
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+  box-shadow: 0 50px 100px -40px rgba(0, 0, 0, .6);
+  transform: translateX(calc(var(--o) * 58%)) translateZ(calc(var(--a) * -280px)) rotateY(calc(var(--o) * -36deg));
+  opacity: calc(1 - var(--a) * .5); z-index: calc(10 - var(--a));
+  transition: transform .9s var(--ease), opacity .9s var(--ease);
+  user-select: none; -webkit-user-select: none;
+}
+.deck .quote::before { content: "\201C"; font-family: var(--display); font-weight: 700; font-size: 7rem; line-height: .7; height: 44px; color: var(--teal); display: block; }
+.deck .quote blockquote { font-family: var(--display); font-style: normal; font-weight: 500; font-size: clamp(1.12rem, .9rem + 1.3vw, 1.9rem); line-height: 1.24; letter-spacing: -.02em; }
+.deck .quote blockquote ul { font-size: .86em; }
+.deck .quote figcaption span { color: var(--teal-ink); opacity: 1; }
+.deck .quote:not(.is-active) { cursor: pointer; }
+.deck .quote:not(.is-active) > * { pointer-events: none; }
+.deck__nav { display: flex; justify-content: center; align-items: center; gap: 22px; margin-top: clamp(28px, 4vw, 48px); }
+.deck__btn { width: 58px; height: 58px; border-radius: 50%; border: 1px solid var(--tline); background: transparent; color: var(--fg); font-size: 1.3rem; cursor: pointer; transition: background-color .35s, border-color .35s, color .35s, transform .35s var(--ease); }
+.deck__btn:hover { background: var(--coral); border-color: var(--coral); color: #fff; transform: scale(1.08); }
+.deck__count { font-family: var(--mono); font-size: .85rem; letter-spacing: .1em; min-width: 5ch; text-align: center; }
+
+/* ── why: cards swing in like doors ── */
+.js .why__grid .card[data-reveal] { transform: perspective(1100px) rotateY(-34deg) translateY(50px); transform-origin: 0 50%; }
+.js .why__grid .card[data-reveal].is-in { transform: none; }
+.why__grid .card:not(.is-done):nth-child(3n + 2) { transition-delay: .1s; }
+.why__grid .card:not(.is-done):nth-child(3n) { transition-delay: .2s; }
+.card--coral h3 small { color: #262732; }
+
+/* ── call to action ── */
+.cta__title { text-shadow: 0 10px 40px rgba(38, 39, 50, .25); }
+
+/* ── phones ── */
+@media (max-width: 720px) {
+  .deck .quote { transform: translateX(calc(var(--o) * 92%)) translateZ(calc(var(--a) * -140px)) rotateY(calc(var(--o) * -20deg)); border-radius: 22px; }
+  .deck .quote::before { font-size: 5rem; height: 32px; }
+  .deck__btn { width: 50px; height: 50px; }
+  .person__gem { right: -10px; border-left-width: 20px; border-right-width: 20px; border-bottom-width: 34px; }
+  .person--flip .person__gem { left: -10px; }
+  .why__grid .card:not(.is-done):nth-child(n) { transition-delay: 0s; }
+  .btn--big { padding: 17px 26px; font-size: 1.05rem; }
+  .hero { padding-top: 96px; }
+  .nav__brand img { height: 38px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ch { transform: none; animation: none; }
+  .js .why__grid .card[data-reveal] { transform: none; }
+}
+.still .ch { transform: none; animation: none; }
+.still .why__grid .card[data-reveal] { transform: none; }

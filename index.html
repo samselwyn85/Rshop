@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Research Shop — Where questions go to get answered</title>
 <meta name="description" content="We provide answers to your questions. It's that simple. Qualitative and quantitative research, polling, cultural competency and insights analysis from Christchurch, Aotearoa.">
-<meta name="theme-color" content="#EAF1EF">
+<meta name="theme-color" content="#FFFFFF">
 <meta property="og:title" content="The Research Shop">
 <meta property="og:description" content="We provide answers to your questions. It's that simple.">
 <meta property="og:image" content="assets/img/reader.webp">
@@ -15,7 +15,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=DM+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..600;1,8..60,300..600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/styles.css?v=8">
+<link rel="stylesheet" href="css/depth.css?v=8">
 <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
@@ -56,7 +57,7 @@
 <main id="content">
 
 <!-- ───────── HERO ───────── -->
-<section class="hero" id="top" data-window="hero">
+<section class="hero" id="top" data-theme="light" data-stage="0.6 0.2 0.95 1 0" data-stage-m="0.32 0.52 0.42 1 0">
   <div class="hero__inner">
     <p class="eyebrow hero__eyebrow"><span class="dot"></span>Where questions go to get answered</p>
     <h1 class="hero__title">
@@ -77,15 +78,19 @@
 </section>
 
 <!-- ───────── MARQUEE ───────── -->
-<div class="marquee" aria-hidden="true">
-  <div class="marquee__track">
+<div class="ribbons" aria-hidden="true">
+  <div class="marquee marquee--a"><div class="marquee__track">
     <span>Qualitative analysis</span><i></i><span>Quantitative analysis</span><i></i><span>User needs assessments</span><i></i><span>Questionnaire development</span><i></i><span>Data collection</span><i></i><span>Report-writing</span><i></i><span>Focus group work</span><i></i><span>Cultural competency</span><i></i><span>Insights analysis</span><i></i><span>Political polling</span><i></i>
     <span>Qualitative analysis</span><i></i><span>Quantitative analysis</span><i></i><span>User needs assessments</span><i></i><span>Questionnaire development</span><i></i><span>Data collection</span><i></i><span>Report-writing</span><i></i><span>Focus group work</span><i></i><span>Cultural competency</span><i></i><span>Insights analysis</span><i></i><span>Political polling</span><i></i>
-  </div>
+  </div></div>
+  <div class="marquee marquee--b"><div class="marquee__track marquee__track--rev">
+    <span>Qualitative analysis</span><i></i><span>Quantitative analysis</span><i></i><span>User needs assessments</span><i></i><span>Questionnaire development</span><i></i><span>Data collection</span><i></i><span>Report-writing</span><i></i><span>Focus group work</span><i></i><span>Cultural competency</span><i></i><span>Insights analysis</span><i></i><span>Political polling</span><i></i>
+    <span>Qualitative analysis</span><i></i><span>Quantitative analysis</span><i></i><span>User needs assessments</span><i></i><span>Questionnaire development</span><i></i><span>Data collection</span><i></i><span>Report-writing</span><i></i><span>Focus group work</span><i></i><span>Cultural competency</span><i></i><span>Insights analysis</span><i></i><span>Political polling</span><i></i>
+  </div></div>
 </div>
 
 <!-- ───────── ABOUT ───────── -->
-<section class="about band band--paper" id="about">
+<section class="about band band--paper" id="about" data-theme="light" data-stage="0.16 -0.66 0.5 0.9 -0.25" data-stage-m="0.8 -0.1 0.36 0.22 -0.2">
   <div class="wrap about__grid">
     <div class="about__copy">
       <p class="eyebrow" data-reveal>About us.</p>
@@ -96,16 +101,16 @@
         <p>By blending the value of statistics with interrogative analysis and a range of other techniques, we are able to ensure an end product which tells a coherent story. This enables us to stand behind the work we do so you can be on the front foot.</p>
       </div>
     </div>
-    <div class="about__art" aria-hidden="true">
-      <div class="layer layer--back" data-speed="-0.06"><img src="assets/img/reader.webp" alt="" loading="lazy" width="1500" height="900"></div>
-      <div class="layer layer--front" data-speed="0.1"><img src="assets/img/aoraki.webp" alt="" loading="lazy" width="768" height="1024"></div>
-      <div class="layer layer--tag" data-speed="0.18"><span>Reliable data.</span><span>Agreed timeframes.</span></div>
+    <div class="about__art" aria-hidden="true" data-tilt3d="14">
+      <div class="layer layer--back" data-speed="-0.06" data-z="-70"><img src="assets/img/reader.webp" alt="" loading="lazy" width="1500" height="900"></div>
+      <div class="layer layer--front" data-speed="0.1" data-z="40"><img src="assets/img/aoraki.webp" alt="" loading="lazy" width="768" height="1024"></div>
+      <div class="layer layer--tag" data-speed="0.18" data-z="120"><span>Reliable data.</span><span>Agreed timeframes.</span></div>
     </div>
   </div>
 </section>
 
 <!-- ───────── HOW IT WORKS ───────── -->
-<section class="how band band--glacier" id="focus">
+<section class="how band band--glacier" id="focus" data-theme="soft" data-stage="-0.52 -0.42 0.72 1 0.18" data-stage-m="0.72 0.78 0.26 0.45 0.2">
   <div class="wrap how__grid">
     <div class="how__intro">
       <p class="eyebrow" data-reveal>How it works.</p>
@@ -138,7 +143,7 @@
 </section>
 
 <!-- ───────── TEAM ───────── -->
-<section class="team band band--paper" id="team">
+<section class="team band band--paper" id="team" data-theme="light" data-stage="0 0 1.25 0.1 0" data-stage-m="0 0 0.5 0.1 0">
   <div class="wrap">
     <header class="head">
       <p class="eyebrow" data-reveal>Our team.</p>
@@ -147,8 +152,7 @@
 
     <article class="person">
       <div class="person__photo" data-reveal>
-        <div class="person__plate" data-speed="0.08"></div>
-        <img src="assets/img/team-nathan.webp" alt="Dr. Nathan McCluskey" loading="lazy" width="406" height="406">
+        <div class="person__scene" data-tilt3d="18"><div class="person__plate"></div><img src="assets/img/team-nathan.webp" alt="Dr. Nathan McCluskey" loading="lazy" width="406" height="406"><span class="person__gem"></span></div>
       </div>
       <div class="person__copy" data-reveal>
         <h3>Dr. Nathan McCluskey</h3>
@@ -158,8 +162,7 @@
 
     <article class="person person--flip">
       <div class="person__photo" data-reveal>
-        <div class="person__plate" data-speed="0.08"></div>
-        <img src="assets/img/team-gina.webp" alt="Dr Gina Colvin" loading="lazy" width="406" height="406">
+        <div class="person__scene" data-tilt3d="18"><div class="person__plate"></div><img src="assets/img/team-gina.webp" alt="Dr Gina Colvin" loading="lazy" width="406" height="406"><span class="person__gem"></span></div>
       </div>
       <div class="person__copy" data-reveal>
         <h3>Dr Gina Colvin (PhD) <span class="iwi">Nga Puhi, Ngāti Porou</span></h3>
@@ -172,7 +175,7 @@
 </section>
 
 <!-- ───────── SERVICES ───────── -->
-<section class="services" id="services">
+<section class="services" id="services" data-theme="light" data-stage="0 0 1 0 0" data-stage-m="0 0 0.4 0 0">
   <div class="services__banner">
     <div class="services__bg" data-speed="-0.12"><img src="assets/img/library-spiral.webp" alt="" loading="lazy" width="1800" height="1192"></div>
     <div class="wrap services__head">
@@ -181,7 +184,7 @@
     </div>
   </div>
 
-  <div class="band band--paper services__sheet">
+  <div class="band band--paper services__sheet" data-fold>
     <div class="wrap">
       <ul class="svc" id="svc">
         <li class="svc__item is-open">
@@ -260,27 +263,28 @@
 </section>
 
 <!-- ───────── TESTIMONIALS ───────── -->
-<section class="quotes band band--deep" id="testimonial">
+<section class="quotes band band--deep" id="testimonial" data-theme="dark" data-stage="0.62 0.52 0.6 0.9 0.2" data-stage-m="0.7 0.72 0.26 0.6 0.2">
   <div class="quotes__bg" data-speed="-0.1" aria-hidden="true"><img src="assets/img/library-wall.webp" alt="" loading="lazy" width="1600" height="1067"></div>
   <div class="wrap">
     <header class="head">
       <p class="eyebrow eyebrow--light" data-reveal>Testimonials.</p>
       <h2 class="display" data-split>We understand your requirements and provide quality work.</h2>
     </header>
-    <div class="quotes__grid">
-      <figure class="quote quote--lead tilt" data-reveal>
+    <div class="deck" id="deck" role="group" aria-roledescription="carousel" aria-label="Testimonials">
+      <div class="deck__stage">
+      <figure class="quote">
         <blockquote>
           <p>Nathan McCluskey provided me with the research evidence I knew I needed but didn&rsquo;t know how to craft myself. Nathan&rsquo;s contribution was quick and easy to understand. Nathan saved me countless hours and the final product exceeded my expectations. He provided the perfect end to end solution for the urgent policy need we had.</p>
         </blockquote>
         <figcaption><strong>Sarah Howard</strong><span>Central Government Manager</span></figcaption>
       </figure>
-      <figure class="quote tilt" data-reveal>
+      <figure class="quote">
         <blockquote>
           <p>Nathan worked with me on significant projects where his research expertise and his ability to get on with people were invaluable to the process of our work.</p>
         </blockquote>
         <figcaption><strong>Jan Pryor</strong><span>Former Director, McKenzie Centre for the Study of Families</span></figcaption>
       </figure>
-      <figure class="quote tilt" data-reveal>
+      <figure class="quote">
         <blockquote>
           <p>&ldquo;I can summarise Dr. McCluskey&rsquo;s notably strong character and achievements thus:</p>
           <ul>
@@ -293,11 +297,17 @@
         <figcaption><strong>Ian Pool, CNZM, PhD, FRSNZ</strong><span>Emeritus Professor, University of Waikato</span></figcaption>
       </figure>
     </div>
+      <div class="deck__nav">
+        <button class="deck__btn" data-dir="-1" aria-label="Previous testimonial">←</button>
+        <span class="deck__count" aria-live="polite"><b id="deckNow">1</b> / 3</span>
+        <button class="deck__btn" data-dir="1" aria-label="Next testimonial">→</button>
+      </div>
+    </div>
   </div>
 </section>
 
 <!-- ───────── WHY SELECT US ───────── -->
-<section class="why band band--glacier" id="why">
+<section class="why band band--glacier" id="why" data-theme="soft" data-stage="0.82 0.5 0.5 0.9 -0.3" data-stage-m="0.75 0.8 0.26 0.4 -0.3">
   <div class="wrap">
     <header class="head head--split">
       <div>
@@ -337,7 +347,7 @@
 </section>
 
 <!-- ───────── CALL TO ACTION (window onto the 3D layer) ───────── -->
-<section class="cta" id="start" data-window="cta">
+<section class="cta" id="start" data-theme="coral" data-stage="0 0.02 1.5 1 0" data-stage-m="0 0 0.56 1 0">
   <div class="cta__inner">
     <h2 class="cta__title" data-split>Start your journey with us now</h2>
     <a class="btn btn--light btn--big" href="#contact">Get started <i aria-hidden="true">→</i></a>
@@ -345,7 +355,7 @@
 </section>
 
 <!-- ───────── CONTACT ───────── -->
-<section class="contact band band--paper" id="contact">
+<section class="contact band band--paper" id="contact" data-theme="coral" data-stage="0 0 1 0 0" data-stage-m="0 0 0.4 0 0" data-fold>
   <div class="wrap">
     <header class="head">
       <p class="eyebrow" data-reveal>Get in Touch</p>
@@ -426,6 +436,6 @@
 
 <div class="peek" id="peek" aria-hidden="true"><img alt=""></div>
 
-<script type="module" src="js/main.js?v=4"></script>
+<script type="module" src="js/main.js?v=8"></script>
 </body>
 </html>
