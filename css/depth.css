@@ -1,7 +1,8 @@
 /* Depth layer: 3D sections, crossing ribbons, testimonial deck, themed colour shifts.
    Loaded after styles.css. */
 
-html { overflow-x: clip; }
+/* clip, not hidden: "hidden" turns the body into its own scroller and breaks pinned elements */
+html, body { overflow-x: clip; }
 
 /* Opaque surfaces keep their own ink, whatever theme the page behind them is in. */
 :where(.services__sheet, .contact, .step, .card, .quote, .reach__card) {
@@ -98,3 +99,98 @@ html { overflow-x: clip; }
 }
 .still .ch { transform: none; animation: none; }
 .still .why__grid .card[data-reveal] { transform: none; }
+
+/* ── how it works: on phones, leave room under the heading for the 3D form before the cards arrive ── */
+@media (max-width: 1020px) {
+  .how__intro { min-height: 74svh; }
+}
+
+/* ══════════ Readability pass: one type family, calmer motion, clear next steps ══════════ */
+
+/* type: Inter for reading, Inter Tight for headings. No italics, no monospace. */
+body { font-size: clamp(1.02rem, .98rem + .2vw, 1.13rem); line-height: 1.7; }
+.display, .hero__title, .cta__title { letter-spacing: -.03em; font-weight: 600; }
+.hero__title { line-height: .98; }
+.line--serif { font-family: var(--display); font-style: normal; font-weight: 600; letter-spacing: -.03em; }
+.how__note { font-style: normal; }
+.eyebrow, .iwi, .card h3 small, .info h3, .reach__card h3, .form label span, .hero__foot, .foot__base, .svc__n, .quote figcaption span, .reach__map span, .form__note, .form__error, .menu__foot, .deck__count {
+  font-family: var(--serif); font-weight: 600; letter-spacing: .06em;
+}
+.form__note, .form__error, .menu__foot { font-weight: 400; letter-spacing: 0; }
+.about__body, .person__copy, .svc__inner p, .card p, .step p { max-width: 62ch; }
+
+/* testimonials: one quote at a time, large and flat */
+.deck__stage { perspective: none; }
+.deck .quote {
+  transform: translateX(calc(var(--o) * 48px)); opacity: calc(1 - var(--a));
+  box-shadow: 0 30px 70px -40px rgba(0, 0, 0, .55);
+  transition: transform .7s var(--ease), opacity .5s var(--ease);
+}
+.deck .quote:not(.is-active) { pointer-events: none; }
+
+/* why: cards rise instead of swinging */
+.js .why__grid .card[data-reveal] { transform: translateY(28px); }
+
+/* ── start here: pick the kind of question ── */
+.ask { padding-block: clamp(56px, 8vw, 120px); }
+.ask__box { background: var(--glacier); border-radius: 30px; padding: clamp(24px, 4vw, 56px); display: grid; gap: clamp(22px, 3vw, 36px); }
+.ask .display { font-size: clamp(1.7rem, 1.1rem + 2.4vw, 3.1rem); }
+.ask__opts { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip {
+  font: inherit; font-family: var(--display); font-weight: 500; font-size: 1rem; line-height: 1.2; text-align: left;
+  padding: 13px 20px; border-radius: 999px; border: 1.5px solid var(--line); background: #fff; color: var(--ink); cursor: pointer;
+  transition: background-color .3s, border-color .3s, color .3s, transform .3s var(--ease);
+}
+.chip:hover { border-color: var(--teal); transform: translateY(-2px); }
+.chip[aria-pressed="true"] { background: var(--teal); border-color: var(--teal); color: #fff; }
+.ask__result { display: grid; gap: 18px; border-top: 1px solid var(--line); padding-top: clamp(20px, 2.6vw, 30px); }
+.ask__result[hidden] { display: none; }
+.ask__result p { font-weight: 600; color: var(--ink); }
+.ask__links { display: flex; flex-wrap: wrap; gap: 10px 26px; }
+.ask__links a { font-family: var(--display); font-weight: 600; font-size: clamp(1.2rem, 1rem + 1vw, 1.7rem); letter-spacing: -.02em; color: var(--teal-ink); text-decoration: none; background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1.5px no-repeat; padding-bottom: 2px; }
+.ask__links a:hover { color: var(--ink); }
+.ask__result .btn { justify-self: start; }
+.ask__result.is-new { animation: fade .5s var(--ease); }
+
+/* ── "next" link at the end of each section ── */
+.next-wrap { margin-top: clamp(40px, 6vw, 80px); }
+.next {
+  display: inline-flex; align-items: baseline; gap: 12px; text-decoration: none; color: var(--fg);
+  font-family: var(--display); font-weight: 600; font-size: clamp(1.15rem, 1rem + .7vw, 1.5rem); letter-spacing: -.02em;
+  border-top: 1px solid var(--tline); padding-top: 18px; width: 100%;
+}
+.next small { font-family: var(--serif); font-size: .8rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-ink); }
+.next i { font-style: normal; margin-left: auto; transition: transform .4s var(--ease); }
+.next:hover i { transform: translateX(8px); }
+.services__sheet .next-wrap { margin-top: clamp(30px, 4vw, 56px); }
+
+/* ── quote bar: the next step is always one tap away ── */
+.dock {
+  position: fixed; z-index: 44; left: 50%; bottom: 16px; translate: -50% 0;
+  display: flex; align-items: center; gap: 6px; padding: 6px 6px 6px 8px; border-radius: 999px;
+  background: rgba(38, 39, 50, .92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 18px 50px -18px rgba(0, 0, 0, .6);
+  transform: translateY(160%); transition: transform .6s var(--ease);
+}
+.dock.is-on { transform: none; }
+.dock__call { color: #fff; text-decoration: none; font-family: var(--display); font-weight: 500; font-size: .92rem; padding: 10px 14px; white-space: nowrap; }
+.dock__call:hover { color: #6FE3C4; }
+.dock .btn { white-space: nowrap; }
+
+/* ── phones and tablets ── */
+@media (max-width: 1020px) {
+  /* keep the 3D form in the top of the screen and let the step cards pass beneath it */
+  .how__intro { min-height: 0; }
+  .step { top: calc(43svh + var(--i) * 12px); min-height: 230px; }
+}
+@media (max-width: 720px) {
+  .chip { width: 100%; border-radius: 16px; }
+  .dock { bottom: 10px; width: calc(100% - 20px); justify-content: space-between; }
+  .dock__call span { display: none; }
+  .deck .quote { transform: translateX(calc(var(--o) * 28px)); }
+  .foot { padding-bottom: 90px; }
+}
+
+/* Step cards pin and stack. They must not be grid items: a pinned grid item cannot leave its own cell. */
+.steps { display: block; }
+.steps .step { margin-bottom: 26px; }

@@ -93,6 +93,45 @@ if (finePointer) {
   })();
 }
 
+/* ── start here: pick a kind of question, see the services we would use, ask for a quote ── */
+const askOpts = $('#askOpts'), askResult = $('#askResult'), askLinks = $('#askLinks');
+const svcItems = $$('.svc__item');
+let askLabel = '';
+function openService(n) {
+  const item = svcItems[n - 1];
+  item.classList.add('is-open');
+  $('.svc__row', item).setAttribute('aria-expanded', 'true');
+  item.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' });
+}
+$$('.chip', askOpts).forEach((chip) => chip.addEventListener('click', () => {
+  $$('.chip', askOpts).forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+  askLabel = chip.textContent.trim();
+  askLinks.innerHTML = '';
+  chip.dataset.svc.split(',').map(Number).forEach((n) => {
+    const a = document.createElement('a');
+    a.href = '#services';
+    a.textContent = $('.svc__t', svcItems[n - 1]).textContent;
+    a.addEventListener('click', (e) => { e.preventDefault(); openService(n); });
+    askLinks.append(a);
+  });
+  askResult.hidden = false;
+  askResult.classList.remove('is-new');
+  void askResult.offsetWidth;
+  askResult.classList.add('is-new');
+}));
+$('#askQuote').addEventListener('click', () => {
+  const box = $('#form textarea');
+  if (!box.value.trim()) box.value = `My question is about: ${askLabel}\n\n`;
+});
+
+/* ── quote bar: shown after the hero, hidden once the contact section is on screen ── */
+const dock = $('#dock'), contactEl = $('#contact');
+function updateDock() {
+  const pastHero = scrollY > innerHeight * 0.7;
+  const atContact = contactEl.getBoundingClientRect().top < innerHeight * 0.75;
+  dock.classList.toggle('is-on', pastHero && !atContact && menu.hidden);
+}
+
 /* ── testimonials: a three-card deck that rotates in 3D ── */
 const deck = $('#deck'), deckCards = $$('.quote', deck), deckNow = $('#deckNow');
 let deckIndex = 0;
@@ -161,18 +200,23 @@ const folds = $$('[data-fold]');
 const steps = $$('.step');
 let lastY = scrollY, ticking = false;
 let station = themed[0];
+let howStep = 1; // which of the four steps is in view (1–4)
 
 function onScroll() {
   const y = scrollY, vh = innerHeight, mid = vh * 0.5;
   bar.style.transform = `scaleX(${clamp(y / (document.documentElement.scrollHeight - vh))})`;
   if (menu.hidden) nav.classList.toggle('is-hidden', y > lastY && y > 300);
   lastY = y;
+  updateDock();
 
   for (const s of themed) {
     const r = s.getBoundingClientRect();
     if (r.top <= mid && r.bottom > mid) { station = s; break; }
   }
   if (document.body.dataset.theme !== station.dataset.theme) document.body.dataset.theme = station.dataset.theme;
+  // a step counts once its card is most of the way to where it pins
+  const pinLine = parseFloat(getComputedStyle(steps[0]).top) + vh * 0.3;
+  howStep = Math.max(1, steps.filter((el) => el.getBoundingClientRect().top < pinLine).length);
 
   if (!reduced) {
     parallax.forEach(({ el, speed, z }) => {
@@ -206,10 +250,12 @@ addEventListener('resize', onScroll);
 onScroll();
 
 /* ── the 3D stage ──
-   The logo is a triangle made of triangles (a Sierpinski triangle). Here it is as a solid:
-   small tetrahedra fly in and lock together, then the finished shape travels down the page,
-   turning as you scroll and loosening when you scroll fast. Loose pieces drift at other depths. */
+   One dataset of points that keeps re-forming to show what research does:
+   hero         scattered data → a trend with its fitted line → the logo triangle (the answer)
+   how it works a question mark → a scoped sample → analysis bars → the answer
+   Elsewhere it rests as the logo triangle. Loose pieces and dust belong to the other sections. */
 const canvas = $('#stage');
+const forced = new URLSearchParams(location.search).get('form'); // e.g. ?still&form=trend, for checking a single formation
 
 async function initStage() {
   const THREE = await import('../assets/vendor/three.module.min.js');
@@ -226,76 +272,161 @@ async function initStage() {
   const sun = new THREE.DirectionalLight(0xffffff, 2.1);
   sun.position.set(3, 5, 6);
   scene.add(sun);
-  const rim = new THREE.DirectionalLight(0x38c695, 0.9);
-  rim.position.set(-5, -2, -3);
-  scene.add(rim);
 
-  // A regular tetrahedron, centred, point up — so its silhouette is the logo's triangle.
-  const S = 1.55;
-  const V = [
-    [0, 1, 0],
-    [Math.sqrt(8 / 9), -1 / 3, 0],
-    [-Math.sqrt(2 / 9), -1 / 3, Math.sqrt(2 / 3)],
-    [-Math.sqrt(2 / 9), -1 / 3, -Math.sqrt(2 / 3)],
-  ].map((v) => v.map((n) => n * S));
-  const tri = [];
-  [[0, 2, 1], [0, 3, 2], [0, 1, 3], [1, 2, 3]].forEach((f) => f.forEach((i) => tri.push(...V[i])));
-  const tetGeo = new THREE.BufferGeometry();
-  tetGeo.setAttribute('position', new THREE.Float32BufferAttribute(tri, 3));
-  tetGeo.computeVertexNormals();
+  const rnd = Math.random;
+  const gauss = () => (rnd() + rnd() + rnd() + rnd() - 2) * 0.87; // roughly normal, sd ≈ 0.5
+  const GREY = [0.66, 0.68, 0.72], TEAL = [0, 0.655, 0.616], MINT = [0.22, 0.776, 0.584], CORAL = [0.988, 0.373, 0.27], CHAR = [0.25, 0.26, 0.28];
+  const mixPick = (table) => { let r = rnd(); for (const [w, c] of table) { if ((r -= w) <= 0) return c; } return table[0][1]; };
 
-  const palette = [0x00a79d, 0x00a79d, 0x00a79d, 0x00a79d, 0x00a79d, 0x38c695, 0x38c695, 0x38c695, 0x404248, 0xfc5f45];
-  const pick = () => new THREE.Color(palette[(Math.random() * palette.length) | 0]);
+  /* ── formations: each is a list of positions + colours for the same N points ── */
+  const N = small ? 800 : 1600;
+  const F = {};
+  const make = (fn) => {
+    const pos = new Float32Array(N * 3), col = new Float32Array(N * 3);
+    for (let i = 0; i < N; i++) { const [p, c] = fn(i); pos.set(p, i * 3); col.set(c, i * 3); }
+    return { pos, col };
+  };
 
-  // Sierpinski tetrahedron: 4^LEVEL small copies.
-  const LEVEL = small ? 3 : 4, COUNT = 4 ** LEVEL, UNIT = 1 / 2 ** LEVEL;
-  const mat = new THREE.MeshStandardMaterial({ flatShading: true, roughness: 0.42, metalness: 0.08, transparent: true, side: THREE.DoubleSide });
-  const pyramid = new THREE.InstancedMesh(tetGeo, mat, COUNT);
-  const pieces = [];
-  for (let i = 0; i < COUNT; i++) {
-    const p = [0, 0, 0];
-    let n = i;
-    for (let k = 1; k <= LEVEL; k++) {
-      const v = V[n % 4]; n = (n / 4) | 0;
-      p[0] += v[0] / 2 ** k; p[1] += v[1] / 2 ** k; p[2] += v[2] / 2 ** k;
-    }
-    const r = 3.5 + Math.random() * 4.5, th = Math.random() * Math.PI * 2, ph = Math.acos(2 * Math.random() - 1);
-    pieces.push({
-      target: new THREE.Vector3(...p),
-      scatter: new THREE.Vector3(r * Math.sin(ph) * Math.cos(th), r * Math.cos(ph) * 0.8, r * Math.sin(ph) * Math.sin(th)),
-      rot: new THREE.Vector3(Math.random() * 6, Math.random() * 6, Math.random() * 6),
-      seed: Math.random(),
+  // scattered, unsorted data: the question before anyone has looked at it
+  F.cloud = make(() => {
+    const r = Math.cbrt(rnd()), th = rnd() * Math.PI * 2, ph = Math.acos(2 * rnd() - 1);
+    return [[r * 1.7 * Math.sin(ph) * Math.cos(th), r * 1.25 * Math.cos(ph), r * 1.0 * Math.sin(ph) * Math.sin(th)], mixPick([[0.72, GREY], [0.28, TEAL]])];
+  });
+
+  // a scatter plot with a clear relationship
+  const SLOPE = 0.55;
+  F.trend = make(() => {
+    const x = -1.5 + rnd() * 3;
+    return [[x, SLOPE * x + gauss() * 0.5, gauss() * 0.45], mixPick([[0.6, TEAL], [0.3, MINT], [0.1, CHAR]])];
+  });
+
+  // a question mark, sampled from rendered text
+  {
+    const c = document.createElement('canvas'); c.width = c.height = 240;
+    const g = c.getContext('2d');
+    g.font = '700 230px "Bricolage Grotesque", "Segoe UI", Arial, sans-serif';
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText('?', 120, 128);
+    const d = g.getImageData(0, 0, 240, 240).data, hits = [];
+    for (let y = 0; y < 240; y += 2) for (let x = 0; x < 240; x += 2) if (d[(y * 240 + x) * 4 + 3] > 128) hits.push([x, y]);
+    F.q = make(() => {
+      const [x, y] = hits.length ? hits[(rnd() * hits.length) | 0] : [120, 120];
+      return [[(x + rnd() * 2 - 120) / 86, (120 - y - rnd() * 2) / 86, gauss() * 0.16], mixPick([[0.74, TEAL], [0.2, MINT], [0.06, CORAL]])];
     });
-    pyramid.setColorAt(i, pick());
   }
+
+  // an ordered population with one block picked out and framed: the scoped job
+  const cols = Math.round(Math.sqrt(N * 1.6)), rows = Math.ceil(N / cols);
+  const GW = 3.0, GH = 1.9, bx0 = Math.round(cols * 0.1), bx1 = Math.round(cols * 0.5), by0 = Math.round(rows * 0.3), by1 = Math.round(rows * 0.85);
+  const gx = (cx) => -GW / 2 + (cx / (cols - 1)) * GW, gy = (cy) => -GH / 2 + (cy / (rows - 1)) * GH;
+  F.grid = make((i) => {
+    const cx = i % cols, cy = (i / cols) | 0;
+    const inBlock = cx >= bx0 && cx <= bx1 && cy >= by0 && cy <= by1;
+    return [[gx(cx), gy(cy), inBlock ? 0.22 : 0], inBlock ? TEAL : GREY];
+  });
+
+  // sorted into bars: the analysis
+  const heights = [0.3, 0.42, 0.38, 0.58, 0.7, 0.84, 1], BASE = -1.25, BMAX = 2.35, BW = 0.3, BGAP = 0.44;
+  const total = heights.reduce((a, b) => a + b, 0);
+  const barOf = (i) => { let r = (i / N) * total; for (let b = 0; b < heights.length; b++) { if ((r -= heights[b]) < 0) return b; } return heights.length - 1; };
+  F.bars = make((i) => {
+    const b = barOf(i);
+    const x = (b - (heights.length - 1) / 2) * BGAP;
+    return [[x + (rnd() - 0.5) * BW, BASE + rnd() * heights[b] * BMAX, (rnd() - 0.5) * BW], b === heights.length - 1 ? CORAL : b % 2 ? MINT : TEAL];
+  });
+
+  // the logo: a triangle made of triangles, in three dimensions (chaos game on a tetrahedron)
+  const S = 1.55;
+  const V = [[0, 1, 0], [Math.sqrt(8 / 9), -1 / 3, 0], [-Math.sqrt(2 / 9), -1 / 3, Math.sqrt(2 / 3)], [-Math.sqrt(2 / 9), -1 / 3, -Math.sqrt(2 / 3)]].map((v) => v.map((n) => n * S));
+  let cg = [0, 0, 0];
+  for (let i = 0; i < 20; i++) { const v = V[(rnd() * 4) | 0]; cg = cg.map((n, k) => (n + v[k]) / 2); }
+  F.tri = make(() => {
+    const v = V[(rnd() * 4) | 0];
+    cg = cg.map((n, k) => (n + v[k]) / 2);
+    return [[cg[0], cg[1] - 0.25, cg[2]], mixPick([[0.56, TEAL], [0.27, MINT], [0.12, CHAR], [0.05, CORAL]])];
+  });
+
+  const cur = { pos: Float32Array.from(F.cloud.pos), col: Float32Array.from(F.cloud.col) };
+  const seed = new Float32Array(N);
+  for (let i = 0; i < N; i++) seed[i] = rnd();
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(cur.pos, 3));
+  geo.setAttribute('aCol', new THREE.BufferAttribute(cur.col, 3));
+  geo.setAttribute('aSeed', new THREE.BufferAttribute(seed, 1));
+  const U = { uPR: { value: pr }, uScale: { value: 1 }, uAlpha: { value: 1 }, uLight: { value: 0 }, uCoral: { value: 0 }, uSize: { value: small ? 5.2 : 5.6 } };
+  const data = new THREE.Points(geo, new THREE.ShaderMaterial({
+    uniforms: U, transparent: true, depthWrite: false,
+    vertexShader: `
+      attribute vec3 aCol; attribute float aSeed;
+      uniform float uPR, uScale, uSize;
+      varying vec3 vCol; varying float vFog;
+      void main() {
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        gl_Position = projectionMatrix * mv;
+        gl_PointSize = uSize * uPR * uScale * (0.7 + aSeed * 0.6) * (6.0 / -mv.z);
+        vCol = aCol;
+        vFog = smoothstep(8.5, 4.6, -mv.z);
+      }`,
+    fragmentShader: `
+      precision mediump float;
+      uniform float uAlpha, uLight, uCoral;
+      varying vec3 vCol; varying float vFog;
+      void main() {
+        float d = length(gl_PointCoord - 0.5);
+        if (d > 0.5) discard;
+        vec3 col = mix(vCol, vec3(0.96), uLight * 0.55);
+        col = mix(col, vec3(0.13, 0.13, 0.17), uCoral * 0.85);
+        gl_FragColor = vec4(col, smoothstep(0.5, 0.36, d) * (0.45 + 0.55 * vFog) * uAlpha);
+      }`,
+  }));
+
+  /* ── chart furniture: axes, the fitted line, the sample frame ── */
+  const rodGeo = new THREE.CylinderGeometry(1, 1, 1, 8).translate(0, 0.5, 0);
+  const up = new THREE.Vector3(0, 1, 0);
+  function rod(a, b, color, radius) {
+    const A = new THREE.Vector3(...a), B = new THREE.Vector3(...b), dir = B.clone().sub(A);
+    const mesh = new THREE.Mesh(rodGeo, new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0 }));
+    mesh.position.copy(A);
+    mesh.quaternion.setFromUnitVectors(up, dir.clone().normalize());
+    mesh.userData = { len: dir.length(), radius, grow: 0 };
+    return mesh;
+  }
+  const AX = -1.68;
+  const axes = [rod([AX, BASE, 0], [1.72, BASE, 0], 0x404248, 0.008), rod([AX, BASE, 0], [AX, 1.3, 0], 0x404248, 0.008)];
+  const fit = [rod([-1.55, SLOPE * -1.55, 0], [1.6, SLOPE * 1.6, 0], 0xfc5f45, 0.02)];
+  const m = 0.07, fx0 = gx(bx0) - m, fx1 = gx(bx1) + m, fy0 = gy(by0) - m, fy1 = gy(by1) + m, fz = 0.22;
+  const frame = [rod([fx0, fy0, fz], [fx1, fy0, fz], 0xfc5f45, 0.012), rod([fx1, fy0, fz], [fx1, fy1, fz], 0xfc5f45, 0.012), rod([fx1, fy1, fz], [fx0, fy1, fz], 0xfc5f45, 0.012), rod([fx0, fy1, fz], [fx0, fy0, fz], 0xfc5f45, 0.012)];
+  const furniture = [[axes, ['trend', 'bars'], 0.55], [fit, ['trend'], 1], [frame, ['grid'], 1]];
+
   const group = new THREE.Group();
-  group.add(pyramid);
+  group.add(data, ...axes, ...fit, ...frame);
   scene.add(group);
 
-  // Loose pieces drifting at different depths.
-  const FLOAT = small ? 12 : 30;
-  const floatMat = new THREE.MeshStandardMaterial({ flatShading: true, roughness: 0.4, metalness: 0.08, emissive: 0xffffff, emissiveIntensity: 0, side: THREE.DoubleSide, transparent: true, opacity: small ? 0.45 : 0.7 });
+  /* ── loose pieces and dust: kept for the sections that have not been redesigned yet ── */
+  const tri3 = [];
+  [[0, 2, 1], [0, 3, 2], [0, 1, 3], [1, 2, 3]].forEach((f) => f.forEach((i) => tri3.push(...V[i])));
+  const tetGeo = new THREE.BufferGeometry();
+  tetGeo.setAttribute('position', new THREE.Float32BufferAttribute(tri3, 3));
+  tetGeo.computeVertexNormals();
+  const FLOAT = small ? 12 : 30, floatMax = small ? 0.45 : 0.7;
+  const floatMat = new THREE.MeshStandardMaterial({ flatShading: true, roughness: 0.4, metalness: 0.08, emissive: 0xffffff, emissiveIntensity: 0, side: THREE.DoubleSide, transparent: true, opacity: 0 });
   const floaters = new THREE.InstancedMesh(tetGeo, floatMat, FLOAT);
   const drift = [];
   for (let i = 0; i < FLOAT; i++) {
-    const z = -5 + Math.random() * (small ? 5 : 7.5);
-    drift.push({ nx: Math.random() * 2 - 1, ny: Math.random(), z, size: 0.035 + Math.random() * 0.075, speed: 0.35 + (z + 5) / 7.5, spin: 0.2 + Math.random() * 0.6, ph: Math.random() * 6 });
-    floaters.setColorAt(i, new THREE.Color([0x00a79d, 0x38c695, 0x00a79d, 0xfc5f45][i % 4])); // no charcoal: these pass behind text
+    const z = -5 + rnd() * (small ? 5 : 7.5);
+    drift.push({ nx: rnd() * 2 - 1, ny: rnd(), z, size: 0.035 + rnd() * 0.075, speed: 0.35 + (z + 5) / 7.5, spin: 0.2 + rnd() * 0.6, ph: rnd() * 6 });
+    floaters.setColorAt(i, new THREE.Color([0x00a79d, 0x38c695, 0x00a79d, 0xfc5f45][i % 4]));
   }
   scene.add(floaters);
 
-  // Fine dust for atmosphere.
   const DUST = small ? 700 : 2200;
   const dustPos = new Float32Array(DUST * 3), dustSeed = new Float32Array(DUST);
-  for (let i = 0; i < DUST; i++) {
-    dustPos.set([(Math.random() - 0.5) * 16, (Math.random() - 0.5) * 10, -6 + Math.random() * 9], i * 3);
-    dustSeed[i] = Math.random();
-  }
+  for (let i = 0; i < DUST; i++) { dustPos.set([(rnd() - 0.5) * 16, (rnd() - 0.5) * 10, -6 + rnd() * 9], i * 3); dustSeed[i] = rnd(); }
   const dustGeo = new THREE.BufferGeometry();
   dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
   dustGeo.setAttribute('aSeed', new THREE.BufferAttribute(dustSeed, 1));
-  const dustU = { uTime: { value: 0 }, uPR: { value: pr }, uLight: { value: 0 } };
-  const dust = new THREE.Points(dustGeo, new THREE.ShaderMaterial({
+  const dustU = { uTime: { value: 0 }, uPR: { value: pr }, uLight: { value: 0 }, uAlpha: { value: 0 } };
+  scene.add(new THREE.Points(dustGeo, new THREE.ShaderMaterial({
     uniforms: dustU, transparent: true, depthWrite: false,
     vertexShader: `
       attribute float aSeed; uniform float uTime, uPR; varying float vSeed;
@@ -307,16 +438,15 @@ async function initStage() {
         vSeed = aSeed;
       }`,
     fragmentShader: `
-      precision mediump float; uniform float uLight; varying float vSeed;
+      precision mediump float; uniform float uLight, uAlpha; varying float vSeed;
       void main() {
         float d = length(gl_PointCoord - 0.5);
         if (d > 0.5) discard;
         vec3 col = mix(vec3(0.25, 0.26, 0.28), vec3(0.0, 0.655, 0.616), step(0.6, vSeed));
         col = mix(col, vec3(1.0), uLight);
-        gl_FragColor = vec4(col, smoothstep(0.5, 0.15, d) * 0.55);
+        gl_FragColor = vec4(col, smoothstep(0.5, 0.15, d) * 0.55 * uAlpha);
       }`,
-  }));
-  scene.add(dust);
+  })));
 
   let W = 0, H = 0, viewW = 0, viewH = 0;
   function resize() {
@@ -333,77 +463,96 @@ async function initStage() {
   const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
   if (finePointer) addEventListener('pointermove', (ev) => { mouse.tx = ev.clientX / W - 0.5; mouse.ty = ev.clientY / H - 0.5; });
 
-  const state = { x: 0, y: 0, s: 0.5, a: 1, tilt: 0, dark: 0, coral: 0, burst: 0, first: true };
+  const state = { x: 0, y: 0, s: 0.6, a: 1, tilt: 0, dark: 0, coral: 0, calm: 1, first: true };
   const dummy = new THREE.Object3D();
-  const tmp = new THREE.Vector3();
-  const white = new THREE.Color(1, 1, 1), shade = new THREE.Color(0.2, 0.2, 0.25);
   const start = performance.now();
-  let prevScroll = scrollY, raf = 0;
+  const HOW = ['q', 'grid', 'bars', 'tri'];
+  let raf = 0;
 
-  function frame(now) {
+  function formation(t) {
+    if (forced && F[forced]) return forced;
+    if (station.id === 'top') return reduced ? 'tri' : t < 1.3 ? 'cloud' : t < 6 ? 'trend' : 'tri';
+    if (station.id === 'focus') return HOW[howStep - 1];
+    return 'tri';
+  }
+
+  function frameLoop(now) {
     raf = 0;
     const t = reduced ? 20 : (now - start) / 1000;
     const portrait = camera.aspect < 0.9;
     const spec = (portrait && station.dataset.stageM ? station.dataset.stageM : station.dataset.stage).split(' ').map(Number);
     const theme = station.dataset.theme;
-    const m = reduced || state.first ? 1 : 0.075;
+    const snap = reduced || state.first;
+    const k = snap ? 1 : 0.075;
     state.first = false;
-    state.x += (spec[0] * viewW / 2 - state.x) * m;
-    state.y += (spec[1] * viewH / 2 - state.y) * m;
-    state.s += (spec[2] - state.s) * m;
-    state.a += (spec[3] - state.a) * m;
-    state.tilt += (spec[4] - state.tilt) * m;
-    state.dark += ((theme === 'dark' ? 1 : 0) - state.dark) * m;
-    state.coral += ((theme === 'coral' ? 1 : 0) - state.coral) * m;
+    state.x += (spec[0] * viewW / 2 - state.x) * k;
+    state.y += (spec[1] * viewH / 2 - state.y) * k;
+    state.s += (spec[2] - state.s) * k;
+    state.a += (spec[3] - state.a) * k;
+    state.tilt += (spec[4] - state.tilt) * k;
+    state.dark += ((theme === 'dark' ? 1 : 0) - state.dark) * k;
+    state.coral += ((theme === 'coral' ? 1 : 0) - state.coral) * k;
+    const calm = 1; // loose pieces and dust are switched off site-wide; the data points are the only 3D
+    state.calm += (calm - state.calm) * k;
     mouse.x += (mouse.tx - mouse.x) * 0.05; mouse.y += (mouse.ty - mouse.y) * 0.05;
 
-    const sy = scrollY, vel = Math.abs(sy - prevScroll);
-    prevScroll = sy;
-    state.burst += ((reduced ? 0 : clamp(vel / 70)) - state.burst) * 0.09;
-
-    // pieces fly in on load, loosen while scrolling fast
-    const intro = reduced ? 1 : clamp((t - 0.2) / 2.8);
-    for (let i = 0; i < COUNT; i++) {
-      const pc = pieces[i];
-      let f = clamp(intro * 1.7 - pc.seed * 0.7);
-      f = f * f * (3 - 2 * f);
-      const loose = 1 - f + state.burst * pc.seed * 0.55;
-      tmp.copy(pc.target).multiplyScalar(1 + state.burst * (0.25 + pc.seed * 0.9));
-      dummy.position.lerpVectors(pc.scatter, tmp, f);
-      dummy.rotation.set(pc.rot.x * loose, pc.rot.y * loose, pc.rot.z * loose);
-      dummy.scale.setScalar(UNIT * (0.25 + 0.75 * f));
-      dummy.updateMatrix();
-      pyramid.setMatrixAt(i, dummy.matrix);
+    // move every point toward its place in the current formation
+    const name = formation(t), target = F[name];
+    const p = cur.pos, c = cur.col, tp = target.pos, tc = target.col;
+    for (let i = 0; i < N; i++) {
+      const e = snap ? 1 : 0.035 + seed[i] * 0.075, j = i * 3;
+      p[j] += (tp[j] - p[j]) * e; p[j + 1] += (tp[j + 1] - p[j + 1]) * e; p[j + 2] += (tp[j + 2] - p[j + 2]) * e;
+      c[j] += (tc[j] - c[j]) * e; c[j + 1] += (tc[j + 1] - c[j + 1]) * e; c[j + 2] += (tc[j + 2] - c[j + 2]) * e;
     }
-    pyramid.instanceMatrix.needsUpdate = true;
+    geo.attributes.position.needsUpdate = true;
+    geo.attributes.aCol.needsUpdate = true;
+
+    furniture.forEach(([rods, shownIn, maxOpacity]) => {
+      const on = shownIn.includes(name) ? 1 : 0;
+      rods.forEach((r, idx) => {
+        const u = r.userData;
+        u.grow += (on - u.grow) * (snap ? 1 : on ? 0.045 : 0.14);
+        const g = clamp(u.grow * (1 + idx * 0.25) - idx * 0.25); // rods of a set draw one after another
+        r.scale.set(u.radius, Math.max(0.0001, u.len * g), u.radius);
+        r.material.opacity = g * maxOpacity * state.a;
+        r.visible = g > 0.002;
+      });
+    });
 
     group.position.set(state.x, state.y, 0);
     group.scale.setScalar(state.s);
-    group.rotation.set(0.14 + mouse.y * 0.3, (reduced ? 0.55 : t * 0.16) + sy * 0.0022 + mouse.x * 0.8, state.tilt);
-    mat.opacity = state.a;
-    mat.color.copy(white).lerp(shade, state.coral);
-    pyramid.visible = state.a > 0.01;
+    group.rotation.set(0.1 + mouse.y * 0.25, (reduced ? 0.32 : Math.sin(t * 0.3) * 0.34) + mouse.x * 0.7, state.tilt);
+    U.uScale.value = state.s;
+    U.uAlpha.value = state.a;
+    U.uLight.value = state.dark;
+    U.uCoral.value = state.coral;
+    data.visible = state.a > 0.01;
 
-    // loose pieces: wrap vertically so they drift past as the page scrolls
-    for (let i = 0; i < FLOAT; i++) {
-      const d = drift[i];
-      const k = (CAM - d.z) / CAM, hz = viewH * k, wz = viewW * k;
-      const yy = (((d.ny + (sy * d.speed) / (H * 2.4)) % 1) + 1) % 1;
-      dummy.position.set(d.nx * wz * 0.56 + mouse.x * -0.25 * d.speed, (yy - 0.5) * hz * 1.35, d.z);
-      dummy.rotation.set(t * d.spin + d.ph + sy * 0.002, t * d.spin * 0.7 + d.ph, d.ph);
-      dummy.scale.setScalar(d.size);
-      dummy.updateMatrix();
-      floaters.setMatrixAt(i, dummy.matrix);
+    const sy = scrollY;
+    floatMat.opacity = floatMax * (1 - state.calm);
+    floaters.visible = floatMat.opacity > 0.01;
+    if (floaters.visible) {
+      for (let i = 0; i < FLOAT; i++) {
+        const d = drift[i];
+        const kz = (CAM - d.z) / CAM, hz = viewH * kz, wz = viewW * kz;
+        const yy = (((d.ny + (sy * d.speed) / (H * 2.4)) % 1) + 1) % 1;
+        dummy.position.set(d.nx * wz * 0.56 + mouse.x * -0.25 * d.speed, (yy - 0.5) * hz * 1.35, d.z);
+        dummy.rotation.set(t * d.spin + d.ph + sy * 0.002, t * d.spin * 0.7 + d.ph, d.ph);
+        dummy.scale.setScalar(d.size);
+        dummy.updateMatrix();
+        floaters.setMatrixAt(i, dummy.matrix);
+      }
+      floaters.instanceMatrix.needsUpdate = true;
+      floatMat.emissiveIntensity = state.coral * 0.75;
     }
-    floaters.instanceMatrix.needsUpdate = true;
-    floatMat.emissiveIntensity = state.coral * 0.75;
-
     dustU.uTime.value = t;
     dustU.uLight.value = Math.max(state.dark * 0.7, state.coral);
+    dustU.uAlpha.value = 1 - state.calm;
+
     renderer.render(scene, camera);
-    if (!reduced) raf = requestAnimationFrame(frame);
+    if (!reduced) raf = requestAnimationFrame(frameLoop);
   }
-  const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
+  const kick = () => { if (!raf) raf = requestAnimationFrame(frameLoop); };
   kick();
   if (reduced) { addEventListener('scroll', kick, { passive: true }); addEventListener('resize', kick); }
 }

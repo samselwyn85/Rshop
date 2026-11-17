@@ -14,9 +14,9 @@
 <link rel="apple-touch-icon" href="assets/img/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=DM+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..600;1,8..60,300..600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=8">
-<link rel="stylesheet" href="css/depth.css?v=8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css?v=14">
+<link rel="stylesheet" href="css/depth.css?v=14">
 <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
@@ -57,7 +57,7 @@
 <main id="content">
 
 <!-- ───────── HERO ───────── -->
-<section class="hero" id="top" data-theme="light" data-stage="0.6 0.2 0.95 1 0" data-stage-m="0.32 0.52 0.42 1 0">
+<section class="hero" id="top" data-theme="light" data-stage="0.53 0.26 0.78 1 0" data-stage-m="0.12 0.5 0.42 1 0">
   <div class="hero__inner">
     <p class="eyebrow hero__eyebrow"><span class="dot"></span>Where questions go to get answered</p>
     <h1 class="hero__title">
@@ -78,16 +78,29 @@
 </section>
 
 <!-- ───────── MARQUEE ───────── -->
-<div class="ribbons" aria-hidden="true">
-  <div class="marquee marquee--a"><div class="marquee__track">
-    <span>Qualitative analysis</span><i></i><span>Quantitative analysis</span><i></i><span>User needs assessments</span><i></i><span>Questionnaire development</span><i></i><span>Data collection</span><i></i><span>Report-writing</span><i></i><span>Focus group work</span><i></i><span>Cultural competency</span><i></i><span>Insights analysis</span><i></i><span>Political polling</span><i></i>
-    <span>Qualitative analysis</span><i></i><span>Quantitative analysis</span><i></i><span>User needs assessments</span><i></i><span>Questionnaire development</span><i></i><span>Data collection</span><i></i><span>Report-writing</span><i></i><span>Focus group work</span><i></i><span>Cultural competency</span><i></i><span>Insights analysis</span><i></i><span>Political polling</span><i></i>
-  </div></div>
-  <div class="marquee marquee--b"><div class="marquee__track marquee__track--rev">
-    <span>Qualitative analysis</span><i></i><span>Quantitative analysis</span><i></i><span>User needs assessments</span><i></i><span>Questionnaire development</span><i></i><span>Data collection</span><i></i><span>Report-writing</span><i></i><span>Focus group work</span><i></i><span>Cultural competency</span><i></i><span>Insights analysis</span><i></i><span>Political polling</span><i></i>
-    <span>Qualitative analysis</span><i></i><span>Quantitative analysis</span><i></i><span>User needs assessments</span><i></i><span>Questionnaire development</span><i></i><span>Data collection</span><i></i><span>Report-writing</span><i></i><span>Focus group work</span><i></i><span>Cultural competency</span><i></i><span>Insights analysis</span><i></i><span>Political polling</span><i></i>
-  </div></div>
-</div>
+<!-- ───────── START HERE ───────── -->
+<section class="ask" id="ask" data-theme="light" data-stage="0 0 0.5 0 0" data-stage-m="0 0 0.3 0 0">
+  <div class="wrap">
+    <div class="ask__box" data-reveal>
+      <div>
+        <p class="eyebrow">Start here</p>
+        <h2 class="display">What do you need answered?</h2>
+      </div>
+      <div class="ask__opts" id="askOpts" role="group" aria-label="Kind of question">
+        <button class="chip" type="button" aria-pressed="false" data-svc="7,10,3">What do people think or want?</button>
+        <button class="chip" type="button" aria-pressed="false" data-svc="2,9,5">What do the numbers say?</button>
+        <button class="chip" type="button" aria-pressed="false" data-svc="1,9">Why is this happening?</button>
+        <button class="chip" type="button" aria-pressed="false" data-svc="4,6,5">I need a survey or report produced</button>
+        <button class="chip" type="button" aria-pressed="false" data-svc="8">My team needs cultural training</button>
+      </div>
+      <div class="ask__result" id="askResult" hidden aria-live="polite">
+        <p>We would use:</p>
+        <div class="ask__links" id="askLinks"></div>
+        <a class="btn" href="#contact" id="askQuote">Get a free quote for this <i aria-hidden="true">→</i></a>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- ───────── ABOUT ───────── -->
 <section class="about band band--paper" id="about" data-theme="light" data-stage="0.16 -0.66 0.5 0.9 -0.25" data-stage-m="0.8 -0.1 0.36 0.22 -0.2">
@@ -101,16 +114,17 @@
         <p>By blending the value of statistics with interrogative analysis and a range of other techniques, we are able to ensure an end product which tells a coherent story. This enables us to stand behind the work we do so you can be on the front foot.</p>
       </div>
     </div>
-    <div class="about__art" aria-hidden="true" data-tilt3d="14">
+    <div class="about__art" aria-hidden="true" data-tilt3d="6">
       <div class="layer layer--back" data-speed="-0.06" data-z="-70"><img src="assets/img/reader.webp" alt="" loading="lazy" width="1500" height="900"></div>
       <div class="layer layer--front" data-speed="0.1" data-z="40"><img src="assets/img/aoraki.webp" alt="" loading="lazy" width="768" height="1024"></div>
       <div class="layer layer--tag" data-speed="0.18" data-z="120"><span>Reliable data.</span><span>Agreed timeframes.</span></div>
     </div>
   </div>
+  <div class="wrap next-wrap"><a class="next" href="#focus"><small>Next</small>How it works<i aria-hidden="true">→</i></a></div>
 </section>
 
 <!-- ───────── HOW IT WORKS ───────── -->
-<section class="how band band--glacier" id="focus" data-theme="soft" data-stage="-0.52 -0.42 0.72 1 0.18" data-stage-m="0.72 0.78 0.26 0.45 0.2">
+<section class="how band band--glacier" id="focus" data-theme="soft" data-stage="-0.5 -0.44 0.72 1 0" data-stage-m="0 0.5 0.32 1 0">
   <div class="wrap how__grid">
     <div class="how__intro">
       <p class="eyebrow" data-reveal>How it works.</p>
@@ -140,6 +154,7 @@
       </li>
     </ol>
   </div>
+  <div class="wrap next-wrap"><a class="next" href="#team"><small>Next</small>Our team<i aria-hidden="true">→</i></a></div>
 </section>
 
 <!-- ───────── TEAM ───────── -->
@@ -152,7 +167,7 @@
 
     <article class="person">
       <div class="person__photo" data-reveal>
-        <div class="person__scene" data-tilt3d="18"><div class="person__plate"></div><img src="assets/img/team-nathan.webp" alt="Dr. Nathan McCluskey" loading="lazy" width="406" height="406"><span class="person__gem"></span></div>
+        <div class="person__scene" data-tilt3d="8"><div class="person__plate"></div><img src="assets/img/team-nathan.webp" alt="Dr. Nathan McCluskey" loading="lazy" width="406" height="406"><span class="person__gem"></span></div>
       </div>
       <div class="person__copy" data-reveal>
         <h3>Dr. Nathan McCluskey</h3>
@@ -162,7 +177,7 @@
 
     <article class="person person--flip">
       <div class="person__photo" data-reveal>
-        <div class="person__scene" data-tilt3d="18"><div class="person__plate"></div><img src="assets/img/team-gina.webp" alt="Dr Gina Colvin" loading="lazy" width="406" height="406"><span class="person__gem"></span></div>
+        <div class="person__scene" data-tilt3d="8"><div class="person__plate"></div><img src="assets/img/team-gina.webp" alt="Dr Gina Colvin" loading="lazy" width="406" height="406"><span class="person__gem"></span></div>
       </div>
       <div class="person__copy" data-reveal>
         <h3>Dr Gina Colvin (PhD) <span class="iwi">Nga Puhi, Ngāti Porou</span></h3>
@@ -172,6 +187,7 @@
       </div>
     </article>
   </div>
+  <div class="wrap next-wrap"><a class="next" href="#services"><small>Next</small>Services<i aria-hidden="true">→</i></a></div>
 </section>
 
 <!-- ───────── SERVICES ───────── -->
@@ -184,7 +200,7 @@
     </div>
   </div>
 
-  <div class="band band--paper services__sheet" data-fold>
+  <div class="band band--paper services__sheet">
     <div class="wrap">
       <ul class="svc" id="svc">
         <li class="svc__item is-open">
@@ -258,6 +274,7 @@
           </div></div>
         </li>
       </ul>
+      <div class="next-wrap"><a class="next" href="#testimonial"><small>Next</small>Testimonials<i aria-hidden="true">→</i></a></div>
     </div>
   </div>
 </section>
@@ -304,6 +321,7 @@
       </div>
     </div>
   </div>
+  <div class="wrap next-wrap"><a class="next" href="#why"><small>Next</small>Why select us<i aria-hidden="true">→</i></a></div>
 </section>
 
 <!-- ───────── WHY SELECT US ───────── -->
@@ -344,10 +362,11 @@
       </article>
     </div>
   </div>
+  <div class="wrap next-wrap"><a class="next" href="#contact"><small>Next</small>Get in touch<i aria-hidden="true">→</i></a></div>
 </section>
 
 <!-- ───────── CALL TO ACTION (window onto the 3D layer) ───────── -->
-<section class="cta" id="start" data-theme="coral" data-stage="0 0.02 1.5 1 0" data-stage-m="0 0 0.56 1 0">
+<section class="cta" id="start" data-theme="dark" data-stage="0 0.02 1.5 1 0" data-stage-m="0 0 0.56 1 0">
   <div class="cta__inner">
     <h2 class="cta__title" data-split>Start your journey with us now</h2>
     <a class="btn btn--light btn--big" href="#contact">Get started <i aria-hidden="true">→</i></a>
@@ -355,7 +374,7 @@
 </section>
 
 <!-- ───────── CONTACT ───────── -->
-<section class="contact band band--paper" id="contact" data-theme="coral" data-stage="0 0 1 0 0" data-stage-m="0 0 0.4 0 0" data-fold>
+<section class="contact band band--paper" id="contact" data-theme="dark" data-stage="0 0 1 0 0" data-stage-m="0 0 0.4 0 0">
   <div class="wrap">
     <header class="head">
       <p class="eyebrow" data-reveal>Get in Touch</p>
@@ -434,8 +453,13 @@
   </div>
 </footer>
 
+<div class="dock" id="dock">
+  <a class="dock__call" href="tel:+64272578018"><span>Call </span>027 257 8018</a>
+  <a class="btn btn--small" href="#contact">Get a free quote</a>
+</div>
+
 <div class="peek" id="peek" aria-hidden="true"><img alt=""></div>
 
-<script type="module" src="js/main.js?v=8"></script>
+<script type="module" src="js/main.js?v=14"></script>
 </body>
 </html>

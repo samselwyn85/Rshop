@@ -15,9 +15,9 @@
   --line: rgba(49, 49, 49, .14);
   --line-light: rgba(239, 239, 239, .2);
 
-  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
-  --serif: "Source Serif 4", Georgia, serif;
-  --mono: "DM Mono", ui-monospace, Consolas, monospace;
+  --display: "Inter Tight", "Inter", "Segoe UI", system-ui, sans-serif;
+  --serif: "Inter", "Segoe UI", system-ui, sans-serif; /* body text */
+  --mono: "Inter", "Segoe UI", system-ui, sans-serif; /* small labels */
 
   --gutter: clamp(20px, 4vw, 64px);
   --max: 1320px;
