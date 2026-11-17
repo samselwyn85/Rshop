@@ -1,4 +1,6 @@
 // The Research Shop — interactions. No build step; Three.js is vendored locally.
+import { initViz } from './viz.js?v=15';
+
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 // ?still in the URL gives the same settled, motion-free page as the reduced-motion setting.
@@ -62,36 +64,16 @@ const spy = new IntersectionObserver((entries) => {
 }, { rootMargin: '-45% 0px -50% 0px' });
 $$('main section[id]').forEach((s) => spy.observe(s));
 
-/* ── services accordion + floating image preview ── */
-const peek = $('#peek'), peekImg = $('img', peek);
-let peekX = 0, peekY = 0, peekTX = 0, peekTY = 0;
+/* ── services accordion; each panel holds a small 3D figure (see viz.js) ── */
 $$('.svc__item').forEach((item) => {
   const row = $('.svc__row', item);
   row.addEventListener('click', () => {
     const open = !item.classList.contains('is-open');
     item.classList.toggle('is-open', open);
     row.setAttribute('aria-expanded', String(open));
-    peek.classList.remove('is-on');
   });
-  if (finePointer) {
-    row.addEventListener('pointerenter', () => {
-      if (item.classList.contains('is-open')) return;
-      peekImg.src = $('img', item).getAttribute('src');
-      peek.classList.add('is-on');
-    });
-    row.addEventListener('pointerleave', () => peek.classList.remove('is-on'));
-  }
 });
-if (finePointer) {
-  addEventListener('pointermove', (e) => { peekTX = e.clientX + 28; peekTY = e.clientY - 110; });
-  (function follow() {
-    if (peek.classList.contains('is-on')) {
-      peekX += (peekTX - peekX) * 0.16; peekY += (peekTY - peekY) * 0.16;
-      peek.style.transform = `translate3d(${peekX.toFixed(1)}px, ${peekY.toFixed(1)}px, 0)`;
-    }
-    requestAnimationFrame(follow);
-  })();
-}
+initViz({ reduced, finePointer });
 
 /* ── start here: pick a kind of question, see the services we would use, ask for a quote ── */
 const askOpts = $('#askOpts'), askResult = $('#askResult'), askLinks = $('#askLinks');

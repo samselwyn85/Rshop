@@ -194,3 +194,6 @@ body { font-size: clamp(1.02rem, .98rem + .2vw, 1.13rem); line-height: 1.7; }
 /* Step cards pin and stack. They must not be grid items: a pinned grid item cannot leave its own cell. */
 .steps { display: block; }
 .steps .step { margin-bottom: 26px; }
+
+/* ── services: a small 3D figure per service ── */
+.svc__viz { display: block; width: 100%; aspect-ratio: 16 / 10; border-radius: 16px; background: var(--glacier); margin-bottom: clamp(26px, 3vw, 44px); }

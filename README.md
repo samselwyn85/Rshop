@@ -4,7 +4,8 @@ Redesign of [theresearchshop.co.nz](https://theresearchshop.co.nz/). A static si
 
 - `index.html` — all content (About, How it works, Our team, Services, Testimonials, Why select us, Contact)
 - `css/styles.css` — design tokens and layout
-- `js/main.js` — 3D hero (Three.js, vendored in `assets/vendor`), scroll effects, services accordion, contact form
+- `js/main.js` — 3D data-point stage (Three.js, vendored in `assets/vendor`), scroll effects, question picker, contact form
+- `js/viz.js` — the ten service figures, drawn on 2D canvases
 - `assets/img` — logos, team photos and imagery from the current site, optimised
 
 ## Run locally
