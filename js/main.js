@@ -1,5 +1,5 @@
 // The Research Shop — interactions. No build step; Three.js is vendored locally.
-import { initViz } from './viz.js?v=15';
+import { initViz } from './viz.js?v=17';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
